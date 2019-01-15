@@ -1,0 +1,27 @@
+Énoncé:
+
+analyse statistique de signal audio pour synthèse et traitement audio
+
+Description:
+
+Ce programme effectura une analyse audio d'un signal ou d'un fichier son et receuillera 
+des statistiques qui pourront ensuite êtres utilisée pour moduler les paramètres d'objet
+de synthèse ou de traitement audio.
+
+Analyse des besoins:
+
+analyse audio
+stockage et traitement de l'information
+traduction des résultats du traitement en objets utiles en audio
+manipulations sur les algorithmes de distribution par l'entremise d'une interface graphique
+
+Acquisition de connaissances:
+
+Recherche sur la librairie numpy utilisée pour l'analyse et le traitement de l'information
+et sur le traitement statistique.
+http://www.numpy.org/
+http://greenteapress.com/thinkdsp/thinkdsp.pdf
+
+Modèle:
+
+
