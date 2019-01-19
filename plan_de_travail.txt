@@ -1,27 +1,32 @@
-�nonc�:
+Énoncé:
 
-analyse statistique de signal audio pour synth�se et traitement audio
+analyse statistique de signal audio pour synthèse et traitement audio
 
 Description:
 
 Ce programme effectura une analyse audio d'un signal ou d'un fichier son et receuillera 
-des statistiques qui pourront ensuite �tres utilis�e pour moduler les param�tres d'objet
-de synth�se ou de traitement audio.
+des statistiques qui pourront ensuite êtres utilisée pour moduler les paramètres d'objet
+de synthèse ou de traitement audio.
 
 Analyse des besoins:
 
 analyse audio
-stockage et traitement de l'information
-traduction des r�sultats du traitement en objets utiles en audio
+stockage et traitement statistique de l'information
+traduction des résultats du traitement en objets utiles en audio
 manipulations sur les algorithmes de distribution par l'entremise d'une interface graphique
 
 Acquisition de connaissances:
 
-Recherche sur la librairie numpy utilis�e pour l'analyse et le traitement de l'information
-et sur le traitement statistique.
+Recherches sur: 
+la librairie numpy utilisée pour l'analyse et le traitement statistique de l'information
+la création d'interfaces graphique simples
 http://www.numpy.org/
-http://greenteapress.com/thinkdsp/thinkdsp.pdf
+...
 
-Mod�le:
+Modèle:
 
-
+Des "buffers" pour le stockage de l'information audio
+L'analyse et le stockage des différentes informations (d'amplitude, de hauteur, spectrale) en lien avec le temps
+Analyse statistique des informations 
+Création d'algorithmes probabiliste basés sur les distributions analysées retournant des signaux de contrôle 
+pouvant être apliqués à différents objets
