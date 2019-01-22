@@ -4,8 +4,8 @@ analyse statistique de signal audio pour synthèse et traitement audio
 
 Description:
 
-Ce programme effectura une analyse audio d'un signal ou d'un fichier son et receuillera 
-des statistiques qui pourront ensuite êtres utilisée pour moduler les paramètres d'objet
+Ce programme effectuera une analyse audio d'un signal ou d'un fichier son et receuillera 
+des statistiques qui pourront ensuite êtres utilisées pour moduler les paramètres d'objets
 de synthèse ou de traitement audio.
 
 Analyse des besoins:
@@ -28,5 +28,5 @@ Modèle:
 Des "buffers" pour le stockage de l'information audio
 L'analyse et le stockage des différentes informations (d'amplitude, de hauteur, spectrale) en lien avec le temps
 Analyse statistique des informations 
-Création d'algorithmes probabiliste basés sur les distributions analysées retournant des signaux de contrôle 
-pouvant être apliqués à différents objets
+Création d'algorithmes probabilistes basés sur les distributions analysées retournant des signaux de contrôle 
+pouvant être apliqués à différents objets 
