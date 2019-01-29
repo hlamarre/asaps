@@ -30,3 +30,11 @@ L'analyse et le stockage des différentes informations (d'amplitude, de hauteur,
 Analyse statistique des informations 
 Création d'algorithmes probabilistes basés sur les distributions analysées retournant des signaux de contrôle 
 pouvant être apliqués à différents objets 
+
+Méthode:
+
+Le son à analyser sera placé dans une table de laquelle une enveloppe sera extraite pour le traitement dynamique.
+L'enveloppe sera analysée selon différent processus ex: table de Markov, et sur différentes échelles temporelles.
+Une nouvelle table sera ensuite créé pour le contrôle de paramètres sur laquelle il sera possible d'intervenir 
+pour altérer la densité, l'échelle des signaux de contrôles... à l'aide de potentiomètres.
+Des informations de hauteurs et de spectres seront également extraites et traitées de façon similaire.
