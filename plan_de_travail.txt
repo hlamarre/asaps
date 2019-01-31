@@ -38,3 +38,15 @@ L'enveloppe sera analysée selon différent processus ex: table de Markov, et su
 Une nouvelle table sera ensuite créé pour le contrôle de paramètres sur laquelle il sera possible d'intervenir 
 pour altérer la densité, l'échelle des signaux de contrôles... à l'aide de potentiomètres.
 Des informations de hauteurs et de spectres seront également extraites et traitées de façon similaire.
+
+############ Commentaires #############
+
+Excellent projet!
+
+Petit conseil... Commence par mettre en place toute la structure du programme, de l'extraction des statistiques
+d'un paramètre au contrôle d'un synth très simple avec une interface graphique minimale. Quand la structure 
+sera en place et fonctionnelle (les bugs corrigés), ajouter différentes analyses ou différentes sonorités de synthèse  
+sera assez simple!
+
+10/10
+
