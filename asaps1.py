@@ -173,12 +173,12 @@ class FreeDev:
         self.mul += self.dev
         return pyo.SigTo(self.mul, 1/self.getRes())
     
-class Histori:
+class Histo:
     def __init__(self, start=0, stop=None, res=50, nbin=50):
         self.start = start
         self.stop = stop
         self.res = res
-        self.nbin = pyo.Sig(nbin)
+        self.nbin = nbin
         
     def getRes(self):    
         return self.res
@@ -221,7 +221,7 @@ class Histori:
         return pyo.SigTo(self.mul, 1/self.getRes())
 
     def changeNbins(self, nBins):
-        self.nbin.value = nBins
+        self.nbin = nBins
         
 class Sections:
     def __init__(self, start=0, stop=None, res=50, thresh=.03, length=100000):
@@ -485,8 +485,8 @@ class Change:
 
   
 asis = AsIs()
-algo = Histori()
-algo.changeNbins(20)
+algo = Histo()
+algo.changeNbins(45)
 tab = pyo.DataTable(size=algo.getDur()*algo.getRes())
 datar = np.asarray(tab.getBuffer())
 
