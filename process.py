@@ -14,6 +14,8 @@ class SndReader:
         self.stop = stop
         self.table = pyo.SndTable(path=self.sound, chnl=0, start=self.start, stop=self.stop, initchnls=0)
         self.dur = self.table.getDur()
+        self.tableOG = pyo.SndTable(path=self.sound, chnl=0, start=0, stop=None, initchnls=0)
+        self.durOG = self.tableOG.getDur()
         self.refreshRate = 3600
         self.OGTable = pyo.SndTable(path=self.sound, chnl=0, initchnls=0)
         self.OGDur = self.OGTable.getDur()
@@ -21,6 +23,8 @@ class SndReader:
     def refresh(self):
         self.table = pyo.SndTable(path=self.sound, chnl=0, start=self.start, stop=self.stop, initchnls=0)
         self.dur = self.table.getDur()
+        self.tableOG = pyo.SndTable(path=self.sound, chnl=0, start=0, stop=None, initchnls=0)
+        self.durOG = self.tableOG.getDur()
         self.OGTable = pyo.SndTable(path=self.sound, chnl=0, initchnls=0)
         self.OGDur = self.OGTable.getDur()
 
@@ -39,6 +43,8 @@ class LiveIn:
         self.dur = dur  
         self.refreshRate = refreshRate  
         self.table = pyo.SndTable()
+        self.tableOG = pyo.SndTable()
+        self.durOG = 1
         self.input = pyo.Input() 
         self.tabFill = pyo.TableFill(self.input, self.table)
 
@@ -55,39 +61,50 @@ class LiveIn:
         self.refRate = stop
         self.refresh()
 
+file = SndReader()
+live = LiveIn()
 
 '''parent'''
 class Amplitude:
     #parent
 
     def __init__(self, res=50, lag=.01, lag2=.03):
+
+        self.snd = file
+
         self.res = res
         self.lag = lag
         self.lag2 = lag2
 
-        self.dur = snd.dur
-        self.refreshRate = snd.refreshRate
+        self.dur = self.snd.dur
+        self.refreshRate = self.snd.refreshRate
         self.len = int(self.dur*self.res)
         self.tab = pyo.DataTable(self.len)
         self.datar = np.asarray(self.tab.getBuffer())
 
-        self.table = snd.table
+        self.table = self.snd.table
         self.env = self.table.getEnvelope(self.len)
         self.envAr = np.concatenate(np.round(np.absolute(np.asarray(self.env)), 2))
 
+        self.tableOG = self.snd.tableOG
+        self.durOG = self.snd.durOG 
         self.sig = None
 
 
     def refresh(self):
-        self.dur = snd.dur
-        self.refreshRate = snd.refreshRate
+        self.snd = self.snd
+        self.dur = self.snd.dur
+        self.refreshRate = self.snd.refreshRate
         self.len = int(self.dur*self.res)
         self.tab = pyo.DataTable(self.len)
         self.datar = np.asarray(self.tab.getBuffer())
 
-        self.table = snd.table
+        self.table = self.snd.table
         self.env = self.table.getEnvelope(self.len)
         self.envAr = np.concatenate(np.round(np.absolute(np.asarray(self.env)), 2))
+
+        self.tableOG = self.snd.tableOG
+        self.durOG = self.snd.durOG 
 
     def refreshTable(self):
         self.env = self.table.getEnvelope(self.len)
@@ -109,16 +126,22 @@ class Amplitude:
 
     def amp2(self):
         self.sig2 = pyo.SigTo(self.play(), self.lag2)
-        return self.sig2       
+        return self.sig2 
+
+    def setMode(self, mode):
+        self.snd = mode
+        self.snd.refresh()
+        self.refresh()
+        self.play()   
 
     def setSound(self, sound):
-        snd.setSound(sound)
+        self.snd.setSound(sound)
         self.refresh()
         self.play()
 
     def setStartStop(self, start=0, stop=None):
         # when in live mode start is buffer time and stop is freq of analysis
-        snd.setDur(start=start, stop=stop)
+        self.snd.setDur(start=start, stop=stop)
         self.refresh()
         self.play()
 
@@ -292,6 +315,7 @@ class MarkAmp(Amplitude):
     def __init__(self, res=50, lag=.01, lag2=.03, order=1):
         super().__init__(res=50, lag=.01, lag2=.03)
         self.order = order
+        self.snd.setDur(stop=1)
 
     def play(self):
         def call():
@@ -397,13 +421,13 @@ class Change(Amplitude):
         self.getChange()
 
 
-snd = SndReader()
-
 
 if __name__ == "__main__":
 
-    algo = AsAmp()
+    algo = MarkAmp()
 
+    #algo.out()
+    
     osc = pyo.Sine(400, mul=algo.amp()).out()
 
     s.gui(locals())
