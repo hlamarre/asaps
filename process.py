@@ -61,8 +61,6 @@ class LiveIn:
         self.refRate = stop
         self.refresh()
 
-file = SndReader()
-live = LiveIn()
 
 '''parent'''
 class Amplitude:
@@ -70,7 +68,7 @@ class Amplitude:
 
     def __init__(self, res=50, lag=.01, lag2=.03):
 
-        self.snd = file
+        self.snd = SndReader()
 
         self.res = res
         self.lag = lag
@@ -163,6 +161,9 @@ class Amplitude:
     def out(self):
         self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
         return self.son.out()
+
+    def stop(self):
+        self.son.stop()
     
 '''amp'''
 class AsAmp(Amplitude):
@@ -184,7 +185,6 @@ class AvgAmp(Amplitude):
                 x = i+self.period
                 self.avList.append(self.envarMo[ x - self.period : x ].mean())
             self.datar[:] = np.asarray(self.avList)
-            print(self.tab.get(1))
         self.pat = pyo.Pattern(call, self.refreshRate).play()
         self.mul = pyo.TableRead(self.tab, 1/self.dur, 1, 3).play()
         return self.mul
@@ -246,7 +246,7 @@ class HistAmp(Amplitude):
         
     def setDensity(self, nBins=50):
         self.nbin = nBins
-        self.refresh()
+        #self.refresh()
         self.play()
 
 class SectAmp(Amplitude):
@@ -260,6 +260,7 @@ class SectAmp(Amplitude):
 
         def sect():
             self.refreshTable()
+            self.thresh = self.envAr.mean()
             self.sectList = []
             self.difAr = np.zeros(self.envAr.shape)
             '''division en sections'''
@@ -298,6 +299,7 @@ class SectAmp(Amplitude):
             self.datar[:] = np.asarray(self.sect)
             self.sect = self.sectOG
 
+        self.pat = call()
         self.pat = pyo.Pattern(call, self.refreshRate).play()
         self.mul = pyo.TableRead(self.tab, 1/self.dur, 1, 3).play()
         return self.mul 
@@ -424,7 +426,11 @@ class Change(Amplitude):
 
 if __name__ == "__main__":
 
+<<<<<<< HEAD
+    algo = AsAmp()
+=======
     algo = MarkAmp()
+>>>>>>> parent of 104db30... pitch detection
 
     #algo.out()
     
