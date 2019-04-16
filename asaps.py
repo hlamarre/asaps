@@ -13,7 +13,6 @@ class Audio:
         self.table = self.algo.table
         self.snd = self.algo.snd
 
-<<<<<<< HEAD
     def refresh(self):
         self.algo = self.algo
         self.algo.refresh()
@@ -28,8 +27,6 @@ class Synth:
         self.synth = pyo.Waveguide(self.filter, 200, .7)
         self.verb = pyo.WGVerb(self.synth).mix(2)
 
-        self.param1 = 0
-        self.param2 = 0
     
     def refresh(self):
         self.filter.freq = self.filter 
@@ -61,30 +58,19 @@ class Synth:
 
     def out(self):
         return self.verb.out()
-=======
->>>>>>> parent of 104db30... pitch detection
 
 
 class AsFrame(wx.Frame):
     def __init__(self, parent, title, pos, size, audio):
         wx.Frame.__init__(self, parent, id=-1, title=title, pos=pos, size=size)
         self.parent = parent
-<<<<<<< HEAD
         self.audio = audio
-=======
-        self.audio = Audio()
->>>>>>> parent of 104db30... pitch detection
         self.panel = wx.Panel(self)
         self.panel.SetBackgroundColour("#444447")
         s.start()
         
-<<<<<<< HEAD
         self.osc = Synth()
         self.osc.out()
-
-=======
-        self.osc = pyo.Sine(400, mul=0).out()
->>>>>>> parent of 104db30... pitch detection
 
         self.amps = ['as is', 'average', 'deviation', 'histogram', 'sections', 'markov']
         self.popup = wx.Choice(self.panel, id=-1, pos=(5,5), choices=self.amps)
@@ -96,15 +82,9 @@ class AsFrame(wx.Frame):
         self.popup2.SetSelection(0)
         self.popup2.Bind(wx.EVT_CHOICE, self.changeMode)    
 
-<<<<<<< HEAD
         self.res = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(130,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.resText = wx.StaticText(self.panel, id=-1, label="res", pos=(130,440))
         self.res.Bind(wx.EVT_LEFT_UP, self.setRes) 
-=======
-        self.res = wx.Slider(self.panel, id=-1, value=50, minValue=1, maxValue=100, pos=(130,140), size=(-1,300), style=wx.SL_VERTICAL | wx.SL_INVERSE)
-        self.resText = wx.StaticText(self.panel, id=-1, label="res 50/s", pos=(130,440))
-        self.res.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.setRes) 
->>>>>>> parent of 104db30... pitch detection
 
         self.floorA = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=.01, pos=(190,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.floorAText = wx.StaticText(self.panel, id=-1, label="floorA", pos=(180,440))
@@ -114,15 +94,9 @@ class AsFrame(wx.Frame):
         self.ampTextA = wx.StaticText(self.panel, id=-1, label="ampA", pos=(240,440))
         self.ampA.Bind(wx.EVT_LEFT_UP, self.changeAmp)
 
-<<<<<<< HEAD
         self.lagA = pyo.PyoGuiControlSlider(self.panel, 0, 100, init=0, pos=(310,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.lagTextA = wx.StaticText(self.panel, id=-1, label="lagA", pos=(300,440))
         self.lagA.Bind(wx.EVT_LEFT_UP, self.setSmooth) 
-=======
-        self.ampA = wx.Slider(self.panel, id=-1, value=100, minValue=0, maxValue=100, pos=(250,140), size=(-1,300), style=wx.SL_VERTICAL | wx.SL_INVERSE)
-        self.ampTextA = wx.StaticText(self.panel, id=-1, label="amp-A 1", pos=(240,440))
-        self.ampA.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.changeAmp)
->>>>>>> parent of 104db30... pitch detection
 
         self.floorB = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=.01, pos=(370,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.floorBText = wx.StaticText(self.panel, id=-1, label="floorB", pos=(360,440))
@@ -202,12 +176,8 @@ class AsFrame(wx.Frame):
         self.Change()
         self.audio.algo.out()
     def Change(self):
-<<<<<<< HEAD
         self.param1 = self.audio.algo.amp()
         self.param2 = self.audio.algo.amp2()
-=======
-        self.osc.mul = self.audio.algo.amp()      
->>>>>>> parent of 104db30... pitch detection
 
     '''
     def changeAlgo(self, evt):
@@ -297,18 +267,20 @@ class AsFrame(wx.Frame):
             self.ctrlText.SetLabel("order 1")
             self.ctrl.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.changeOrder)   
 
-        self.Change()    
+        #self.Change()    
         self.Refresh()
     
 
     def changeMode(self, evt):
-        if self.popup.Selection == 0 :
-            self.audio = Audio(pro.SndReader())
-        elif self.popup.Selection == 1 :
-            self.audio = Audio(pro.LiveIn())
+        if self.popup2.Selection == 0 :
+            self.audio.algo.setMode(pro.SndReader())
+        elif self.popup2.Selection == 1 :
+            self.audio.algo.setMode(pro.LiveIn())
         self.audio.refresh()
         self.Change()    
         self.Refresh()
+        
+
 
     def OGsoundON(self, evt):
         x = evt.IsChecked() 
@@ -371,12 +343,8 @@ class AsFrame(wx.Frame):
         x = evt.GetInt()
         self.audio.algo.setRes(x)
         self.Change()
-<<<<<<< HEAD
         #self.resText.SetLabel("res")
         evt.Skip()
-=======
-        self.resText.SetLabel("res %d /s" % x)
->>>>>>> parent of 104db30... pitch detection
 
     def changeFloorA(self, evt):  
         if evt.LeftUp(): 
