@@ -71,6 +71,7 @@ class AsFrame(wx.Frame):
         
         self.osc = Synth()
         self.osc.out()
+        self.mode = pro.SndReader()
 
         self.amps = ['as is', 'average', 'deviation', 'histogram', 'sections', 'markov']
         self.popup = wx.Choice(self.panel, id=-1, pos=(5,5), choices=self.amps)
@@ -86,7 +87,7 @@ class AsFrame(wx.Frame):
         self.resText = wx.StaticText(self.panel, id=-1, label="res", pos=(130,440))
         self.res.Bind(wx.EVT_LEFT_UP, self.setRes) 
 
-        self.floorA = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=.01, pos=(190,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.floorA = pyo.PyoGuiControlSlider(self.panel, .001, 100, init=.001, pos=(190,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.floorAText = wx.StaticText(self.panel, id=-1, label="floorA", pos=(180,440))
         self.floorA.Bind(wx.EVT_LEFT_UP, self.changeFloorA) 
 
@@ -98,7 +99,7 @@ class AsFrame(wx.Frame):
         self.lagTextA = wx.StaticText(self.panel, id=-1, label="lagA", pos=(300,440))
         self.lagA.Bind(wx.EVT_LEFT_UP, self.setSmooth) 
 
-        self.floorB = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=.01, pos=(370,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.floorB = pyo.PyoGuiControlSlider(self.panel, .001, 100, init=.001, pos=(370,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.floorBText = wx.StaticText(self.panel, id=-1, label="floorB", pos=(360,440))
         self.floorB.Bind(wx.EVT_LEFT_UP, self.changeFloorB) 
 
@@ -176,8 +177,34 @@ class AsFrame(wx.Frame):
         self.Change()
         self.audio.algo.out()
     def Change(self):
+        self.mode = self.mode
         self.param1 = self.audio.algo.amp()
         self.param2 = self.audio.algo.amp2()
+
+        if self.checkAmpA.IsChecked():
+            self.osc.setAmp(self.param1) 
+        if self.checkPitchA.IsChecked():
+            self.osc.setPitch(self.param1) 
+        if self.checkFilterA.IsChecked(): 
+            self.osc.setFilter(self.param1) 
+        if self.checkExtraA.IsChecked():
+            self.osc.setExtra(self.param1) 
+        if self.checkAmpB.IsChecked():
+            self.osc.setAmp(self.param2) 
+        if self.checkPitchB.IsChecked():
+            self.osc.setPitch(self.param2) 
+        if self.checkFilterB.IsChecked():
+            self.osc.setFilter(self.param2) 
+        if self.checkExtraB.IsChecked():
+            self.osc.setExtra(self.param2) 
+
+        self.audio.algo.sig.mul = self.ampA.getValue()
+        self.audio.algo.sig2.mul = self.ampB.getValue()
+
+
+        
+
+
 
     '''
     def changeAlgo(self, evt):
@@ -267,15 +294,22 @@ class AsFrame(wx.Frame):
             self.ctrlText.SetLabel("order 1")
             self.ctrl.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.changeOrder)   
 
-        #self.Change()    
+        self.Change()
+
+        xA = self.floorA.getValue()* 100
+        self.param1 += xA 
+        xB = self.floorB.getValue()* 100
+        self.param2 += xB   
+
         self.Refresh()
     
 
     def changeMode(self, evt):
         if self.popup2.Selection == 0 :
-            self.audio.algo.setMode(pro.SndReader())
+            self.mode = pro.SndReader()
         elif self.popup2.Selection == 1 :
-            self.audio.algo.setMode(pro.LiveIn())
+            self.mode = pro.LiveIn()
+        self.audio.algo.setMode(self.mode)
         self.audio.refresh()
         self.Change()    
         self.Refresh()
@@ -288,6 +322,7 @@ class AsFrame(wx.Frame):
             self.audio.algo.out()
         else:
             self.audio.algo.stop()
+         
 
 
 
@@ -321,26 +356,27 @@ class AsFrame(wx.Frame):
         x = evt.GetInt()
         self.audio.algo.setPeriod(x)
         self.ctrlText.SetLabel("period %d" % x) 
-        self.Change()   
+        #self.Change()   
     def changeDens(self, evt):  
         x = evt.GetInt()
         self.audio.algo.setDensity(x)
         self.ctrlText.SetLabel("density %d" % x)
-        self.Change()   
+        #self.Change()   
     def changeLength(self, evt):  
         x = evt.GetInt()
         self.audio.algo.setLength(x)
         self.ctrlText.SetLabel("length %d" % x)
-        self.Change()   
+        #self.Change()   
     def changeOrder(self, evt):  
         x = evt.GetInt()
         self.audio.algo.setOrder(x)
         self.ctrlText.SetLabel("order %d" % x)
-        self.Change()   
+        #self.Change()   
     
 
-    def setRes(self, evt):  
-        x = evt.GetInt()
+    def setRes(self, evt): 
+        if evt.LeftUp(): 
+            x = self.res.getValue()
         self.audio.algo.setRes(x)
         self.Change()
         #self.resText.SetLabel("res")
@@ -401,8 +437,10 @@ class AsFrame(wx.Frame):
                 self.audio.algo.setSound(path)
 
         self.dlg.Destroy()
-        self.sndview.setTable(self.audio.algo.tableOG)
+        if self.checkOG.IsChecked():
+            self.audio.algo.out()
         self.Change()
+        self.sndview.setTable(self.audio.algo.tableOG)
         self.Refresh()    
 
 
