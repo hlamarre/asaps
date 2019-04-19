@@ -55,7 +55,7 @@ class LiveIn:
     def setSound(self, sound):
         pass
 
-    def setDur(self, start=1, stop=1):
+    def setDur(self, start=1, stop=.1):
         self.dur = start
         self.refreshRate = stop
         self.refresh()
@@ -136,11 +136,12 @@ class Amplitude:
         self.refresh()
         self.play()
 
-    def setStartStop(self, start=0, stop=None):
+    def setStartStop(self, start, stop):
         # when in live mode start is buffer time and stop is freq of analysis
         self.snd.setDur(start=start, stop=stop)
         self.refresh()
         self.refreshTable()
+        #self.son.play()
         self.play()
 
     def setRes(self, res):
@@ -164,6 +165,12 @@ class Amplitude:
 
     def stop(self):
         self.son.stop()
+
+    def freeze(self):
+        self.pat.stop()
+
+    def unFreeze(self):
+        self.pat.play()
     
 '''amp'''
 class AsAmp(Amplitude):
@@ -207,10 +214,11 @@ class DevAmp(Amplitude):
             for i in range(self.envAr.size):
                 x = self.envAr[i] - self.envAr[i-1]
                 self.devList.append(x)
+            self.mul += pyo.Choice(self.devList, self.res)
         self.pat = deviation()
         self.pat = pyo.Pattern(deviation, self.refreshRate).play()  
 
-        self.mul += pyo.Choice(self.devList, self.res)
+        
         return self.mul
 
 class HistAmp(Amplitude):
@@ -234,13 +242,13 @@ class HistAmp(Amplitude):
             self.hist = np.round(self.hist,8)
             self.hist = self.hist/self.hist.sum()
             self.bins = self.bin[0:self.nbin]
-        self.patHist = hist()
-        self.patHist = pyo.Pattern(hist, self.refreshRate).play()
+        self.pat = hist()
+        self.pat = pyo.Pattern(hist, self.refreshRate).play()
 
         def call():
             randHist = np.float(np.random.choice(self.bins, p=self.hist))
             self.datar[:] = randHist
-        self.pat = pyo.Pattern(call, 1/self.res).play()
+        self.patHist = pyo.Pattern(call, 1/self.res).play()
         self.mul = pyo.TableRead(self.tab, 1/self.dur, 1, 3).play()
         return self.mul
         
@@ -281,8 +289,8 @@ class SectAmp(Amplitude):
                     if self.sectAr[i].size < self.length:
                         del self.sectAr[i]
 
-        self.patSect = sect()
-        self.patSect = pyo.Pattern(sect, self.dur).play()
+        self.pat = sect()
+        self.pat = pyo.Pattern(sect, self.dur).play()
         return self.sectAr
 
     def play(self):
@@ -299,8 +307,8 @@ class SectAmp(Amplitude):
             self.datar[:] = np.asarray(self.sect)
             self.sect = self.sectOG
 
-        self.pat = call()
-        self.pat = pyo.Pattern(call, self.refreshRate).play()
+        self.patSect = call()
+        self.patSect = pyo.Pattern(call, self.refreshRate).play()
         self.mul = pyo.TableRead(self.tab, 1/self.dur, 1, 3).play()
         return self.mul 
 
@@ -427,7 +435,7 @@ class Change(Amplitude):
 if __name__ == "__main__":
     s = pyo.Server().boot()
 
-    algo = AsAmp()
+    algo = DevAmp()
     algo.setMode(LiveIn())
     #algo.out()
     

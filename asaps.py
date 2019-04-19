@@ -1,7 +1,5 @@
 import pyo
 import numpy as np
-from numpy.random import choice
-import random
 import wx
 import process as pro
 s = pyo.Server().boot()
@@ -66,14 +64,14 @@ class AsFrame(wx.Frame):
         self.parent = parent
         self.audio = audio
         self.panel = wx.Panel(self)
-        self.panel.SetBackgroundColour("#444447")
+        self.panel.SetBackgroundColour("#555558")
         s.start()
         
         self.osc = Synth()
         self.osc.out()
         self.mode = pro.SndReader()
 
-        self.amps = ['as is', 'average', 'deviation', 'histogram', 'sections', 'markov']
+        self.amps = ['as is', 'average', 'deviation', 'histogram', 'sections']
         self.popup = wx.Choice(self.panel, id=-1, pos=(5,5), choices=self.amps)
         self.popup.SetSelection(0)
         self.popup.Bind(wx.EVT_CHOICE, self.changeAlgo)
@@ -84,35 +82,39 @@ class AsFrame(wx.Frame):
         self.popup2.Bind(wx.EVT_CHOICE, self.changeMode)    
 
         self.res = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(130,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.resText = wx.StaticText(self.panel, id=-1, label="res", pos=(130,440))
+        self.resText = wx.StaticText(self.panel, id=-1, label="res", pos=(135,440))
         self.res.Bind(wx.EVT_LEFT_UP, self.setRes) 
 
-        self.floorA = pyo.PyoGuiControlSlider(self.panel, .001, 100, init=.001, pos=(190,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.floorAText = wx.StaticText(self.panel, id=-1, label="floorA", pos=(180,440))
+        self.floorA = pyo.PyoGuiControlSlider(self.panel, .001, 100, init=.001, pos=(210,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.floorAText = wx.StaticText(self.panel, id=-1, label="floorA", pos=(200,440))
         self.floorA.Bind(wx.EVT_LEFT_UP, self.changeFloorA) 
 
-        self.ampA = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=100, pos=(250,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.ampTextA = wx.StaticText(self.panel, id=-1, label="ampA", pos=(240,440))
+        self.ampA = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=100, pos=(260,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.ampTextA = wx.StaticText(self.panel, id=-1, label="ampA", pos=(250,440))
         self.ampA.Bind(wx.EVT_LEFT_UP, self.changeAmp)
 
         self.lagA = pyo.PyoGuiControlSlider(self.panel, 0, 100, init=0, pos=(310,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.lagTextA = wx.StaticText(self.panel, id=-1, label="lagA", pos=(300,440))
+        self.lagTextA = wx.StaticText(self.panel, id=-1, label="lagA", pos=(310,440))
         self.lagA.Bind(wx.EVT_LEFT_UP, self.setSmooth) 
 
-        self.floorB = pyo.PyoGuiControlSlider(self.panel, .001, 100, init=.001, pos=(370,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.floorBText = wx.StaticText(self.panel, id=-1, label="floorB", pos=(360,440))
+        self.floorB = pyo.PyoGuiControlSlider(self.panel, .001, 100, init=.001, pos=(390,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.floorBText = wx.StaticText(self.panel, id=-1, label="floorB", pos=(380,440))
         self.floorB.Bind(wx.EVT_LEFT_UP, self.changeFloorB) 
 
-        self.ampB = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=100, pos=(430,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.ampTextB = wx.StaticText(self.panel, id=-1, label="ampB", pos=(420,440))
+        self.ampB = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=100, pos=(440,140), size=(25,300), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.ampTextB = wx.StaticText(self.panel, id=-1, label="ampB", pos=(430,440))
         self.ampB.Bind(wx.EVT_LEFT_UP, self.changeAmpB)
 
         self.lagB = pyo.PyoGuiControlSlider(self.panel, 0, 100, init=0, pos=(490,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
-        self.lagTextB = wx.StaticText(self.panel, id=-1, label="lagB", pos=(480,440))
+        self.lagTextB = wx.StaticText(self.panel, id=-1, label="lagB", pos=(490,440))
         self.lagB.Bind(wx.EVT_LEFT_UP, self.setSmoothB) 
 
         self.chooseButton = wx.Button(self.panel, id=-1, label="load sound", pos=(625,110))
-        self.chooseButton.Bind(wx.EVT_BUTTON, self.loadSnd)   
+        self.chooseButton.Bind(wx.EVT_BUTTON, self.loadSnd) 
+
+        self.freeze = wx.Button(self.panel, id=-1, label='freeze', pos=(5,35), size=(82,20))
+        self.freeze.Bind(wx.EVT_BUTTON, self.freezeBuff)  
+        self.freeze.Hide()
 
         '''
         self.ctrl = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(10,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
@@ -132,7 +134,12 @@ class AsFrame(wx.Frame):
         self.sndview.Bind(pyo.EVT_PYO_GUI_SNDVIEW_SELECTION, self.setStSp)
         self.SndVSizer.Add(self.sndview, 1, wx.VERTICAL | wx.EXPAND, 5)
 
-
+        self.memSize = pyo.PyoGuiControlSlider(self.panel, 1, 60, init=1, pos=(400,30), size=(440,10), log=False, integer=False, powoftwo=False, orient=wx.HORIZONTAL)
+        self.memText = wx.StaticText(self.panel, id=-1, label="memory time", pos=(300,25))
+        self.memSize.Bind(wx.EVT_LEFT_UP, self.setMem)  
+        self.memSize.Hide() 
+        self.memText.Hide()     
+        
         self.checkTextA = wx.StaticText(self.panel, id=-1, label="A", pos=(570,220))
         self.checkTextB = wx.StaticText(self.panel, id=-1, label="B", pos=(570,270))        
 
@@ -312,16 +319,45 @@ class AsFrame(wx.Frame):
     
 
     def changeMode(self, evt):
+
         if self.popup2.Selection == 0 :
             self.mode = pro.SndReader()
+            self.sndview.Show()
+            self.chooseButton.Show()
+            self.checkOG.Show()
+            self.audio.algo.play()
+            self.memSize.Hide()
+            self.memText.Hide()
+            self.freeze.Hide()
+
         elif self.popup2.Selection == 1 :
-            self.mode = pro.LiveIn()
+            self.mode = pro.LiveIn(5)
+            self.sndview.Hide()
+            self.chooseButton.Hide()
+            self.checkOG.Hide()
+            self.audio.algo.stop()
+            self.memSize.Show()
+            self.memText.Show()
+            self.freeze.Show()
+
         self.audio.algo.setMode(self.mode)
+        if self.popup2.Selection == 0 :
+            self.audio.algo.out()
+        
         self.audio.refresh()
         self.Change()    
         self.Refresh()
         
 
+    def freezeBuff(self, evt):
+        self.audio.algo.freeze()
+        self.freeze.Label = 'unfreeze'
+        self.freeze.Bind(wx.EVT_BUTTON, self.unFreezeBuff)
+
+    def unFreezeBuff(self, evt):
+        self.audio.algo.unFreeze()
+        self.freeze.Label = 'freeze'
+        self.freeze.Bind(wx.EVT_BUTTON, self.freezeBuff)
 
     def OGsoundON(self, evt):
         x = evt.IsChecked() 
@@ -384,52 +420,58 @@ class AsFrame(wx.Frame):
     def setRes(self, evt): 
         if evt.LeftUp(): 
             x = self.res.getValue()
-        self.audio.algo.setRes(x)
-        self.Change()
-        #self.resText.SetLabel("res")
+            self.audio.algo.setRes(x)
+            self.Change()
         evt.Skip()
 
     def changeFloorA(self, evt):  
         if evt.LeftUp(): 
             x = self.floorA.getValue()* 100
-        self.param1 += x
-        #self.floorAText.SetLabel("floorA")
+            self.param1 += x
         evt.Skip()
 
     def changeAmp(self, evt): 
         if evt.LeftUp(): 
             x = self.ampA.getValue() * 1
-        self.audio.algo.sig.mul = x
-        #self.ampTextA.SetLabel("ampA")
+            self.audio.algo.sig.mul = x
         evt.Skip()
 
     def setSmooth(self, evt): 
         if evt.LeftUp(): 
             x = self.lagA.getValue() * .01
-        self.audio.algo.sig.time = x
-        #self.lagTextA.SetLabel("lagA")
+            self.audio.algo.sig.time = x
         evt.Skip()
 
 
     def changeFloorB(self, evt):  
         if evt.LeftUp(): 
             x = self.floorB.getValue()* 100
-        self.param2 += x
-        #self.floorBText.SetLabel("floorB")
+            self.param2 += x
         evt.Skip()
 
     def changeAmpB(self, evt):
         if evt.LeftUp(): 
             x = self.ampB.getValue() * 1
-        self.audio.algo.sig2.mul = x
-        #self.ampTextB.SetLabel("ampB")
+            self.audio.algo.sig2.mul = x
         evt.Skip()
 
     def setSmoothB(self, evt):  
         if evt.LeftUp(): 
             x = self.lagB.getValue() * .01
-        self.audio.algo.sig2.time = x
-        #self.lagTextB.SetLabel("lagB")
+            self.audio.algo.sig2.time = x
+        evt.Skip()
+
+
+    def setMem(self,evt):
+        if evt.LeftUp(): 
+            x = self.lagB.getValue()
+            self.mode = pro.LiveIn(x, x)
+            self.audio.algo.setMode(self.mode)
+            if self.popup2.Selection == 0 :
+                self.audio.algo.out()
+        
+            self.audio.refresh()
+            self.Change() 
         evt.Skip()
 
 
@@ -454,6 +496,8 @@ class AsFrame(wx.Frame):
     def setStSp(self, evt):
         self.audio.algo.setStartStop((evt.value[0]*self.audio.algo.durOG), (evt.value[1]*self.audio.algo.durOG))
         self.Change()
+        if self.checkOG.IsChecked():
+            self.audio.algo.out()
         self.Refresh() 
 
 
