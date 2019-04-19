@@ -177,7 +177,7 @@ class AsFrame(wx.Frame):
         self.Change()
         self.audio.algo.out()
     def Change(self):
-        self.mode = self.mode
+        #self.mode = self.mode
         self.param1 = self.audio.algo.amp()
         self.param2 = self.audio.algo.amp2()
 
@@ -294,12 +294,19 @@ class AsFrame(wx.Frame):
             self.ctrlText.SetLabel("order 1")
             self.ctrl.Bind(wx.EVT_SCROLL_THUMBRELEASE, self.changeOrder)   
 
+
+        if self.popup2.GetSelection() == 0 :
+            self.mode = pro.SndReader()
+        elif self.popup2.GetSelection() == 1 :
+            self.mode = pro.LiveIn()          
+        self.audio.algo.setMode(self.mode)
+
         self.Change()
 
         xA = self.floorA.getValue()* 100
         self.param1 += xA 
         xB = self.floorB.getValue()* 100
-        self.param2 += xB   
+        self.param2 += xB
 
         self.Refresh()
     

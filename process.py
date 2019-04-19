@@ -38,7 +38,7 @@ class SndReader:
 
 class LiveIn:
 
-    def __init__(self, dur=1, refreshRate=1):  
+    def __init__(self, dur=1, refreshRate=.1):  
         self.dur = dur  
         self.refreshRate = refreshRate  
         self.table = pyo.SndTable()
@@ -57,7 +57,7 @@ class LiveIn:
 
     def setDur(self, start=1, stop=1):
         self.dur = start
-        self.refRate = stop
+        self.refreshRate = stop
         self.refresh()
 
 
