@@ -331,7 +331,7 @@ class AsFrame(wx.Frame):
             self.freeze.Hide()
 
         elif self.popup2.Selection == 1 :
-            self.mode = pro.LiveIn(5)
+            self.mode = pro.LiveIn()
             self.sndview.Hide()
             self.chooseButton.Hide()
             self.checkOG.Hide()
@@ -464,7 +464,7 @@ class AsFrame(wx.Frame):
 
     def setMem(self,evt):
         if evt.LeftUp(): 
-            x = self.lagB.getValue()
+            x = self.memSize.getValue()
             self.mode = pro.LiveIn(x, x)
             self.audio.algo.setMode(self.mode)
             if self.popup2.Selection == 0 :
