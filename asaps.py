@@ -12,10 +12,12 @@ class Audio:
         self.snd = self.algo.snd
 
     def refresh(self):
+        self.snd = self.algo.snd
+        self.snd.refresh()
         self.algo = self.algo
         self.algo.refresh()
         self.table = self.algo.table
-        self.snd = self.algo.snd
+        
         
 
 class Synth:
@@ -183,6 +185,8 @@ class AsFrame(wx.Frame):
  
         self.Change()
         self.audio.algo.out()
+
+        
     def Change(self):
         #self.mode = self.mode
         self.param1 = self.audio.algo.amp()
@@ -335,10 +339,10 @@ class AsFrame(wx.Frame):
             self.sndview.Hide()
             self.chooseButton.Hide()
             self.checkOG.Hide()
-            self.audio.algo.stop()
             self.memSize.Show()
             self.memText.Show()
             self.freeze.Show()
+            self.audio.algo.stop()
 
         self.audio.algo.setMode(self.mode)
         if self.popup2.Selection == 0 :
@@ -465,8 +469,8 @@ class AsFrame(wx.Frame):
     def setMem(self,evt):
         if evt.LeftUp(): 
             x = self.memSize.getValue()
-            self.mode = pro.LiveIn(x, x)
-            self.audio.algo.setMode(self.mode)
+            #self.mode = pro.LiveIn(x)
+            self.audio.algo.setDur(x)
             if self.popup2.Selection == 0 :
                 self.audio.algo.out()
         

@@ -85,6 +85,7 @@ class Amplitude:
 
         self.tableOG = self.snd.tableOG
         self.durOG = self.snd.durOG 
+        self.son = pyo.TableRead(self.table, 1/self.dur, 1)
         self.sig = None
 
 
@@ -102,6 +103,7 @@ class Amplitude:
 
         self.tableOG = self.snd.tableOG
         self.durOG = self.snd.durOG 
+        self.son = pyo.TableRead(self.table, 1/self.dur, 1)
 
     def refreshTable(self):
         self.env = self.table.getEnvelope(self.len)
@@ -165,6 +167,10 @@ class Amplitude:
 
     def stop(self):
         self.son.stop()
+
+    def setDur(self, start=1, stop=.1):
+        self.snd.setDur(start, stop)
+        self.refresh()
 
     def freeze(self):
         self.pat.stop()
@@ -254,7 +260,6 @@ class HistAmp(Amplitude):
         
     def setDensity(self, nBins=50):
         self.nbin = nBins
-        #self.refresh()
         self.play()
 
 class SectAmp(Amplitude):

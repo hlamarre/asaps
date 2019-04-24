@@ -3,7 +3,7 @@ import numpy as np
 from numpy.random import choice
 import random
 import wx
-import process as pro
+import process_old as pro
 s = pyo.Server().boot()
 
 

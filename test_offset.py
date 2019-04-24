@@ -38,9 +38,12 @@ pitchPat = pyo.Pattern(pitchFunc, .1).play()
 
 def onComplete():
     pit = pyo.Choice(pitchList)
-    osc = pyo.Sine(pit).out()
-
-print("Start begin")
+    #osc = pyo.Sine(pit).out()
+    print("Start")
+    
+print("begin")
 s.start()
-onComplete()
+pit = pyo.Choice(pitchList)
+osc = pyo.Sine(pit).out()
+
 
