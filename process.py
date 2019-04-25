@@ -38,7 +38,7 @@ class SndReader:
 
 class LiveIn:
 
-    def __init__(self, dur=1, refreshRate=.1):  
+    def __init__(self, dur=1, refreshRate=.02):  
         self.dur = dur  
         self.refreshRate = refreshRate  
         self.table = pyo.SndTable()
@@ -47,15 +47,16 @@ class LiveIn:
         self.input = pyo.Input() 
         self.tabFill = pyo.TableFill(self.input, self.table)
 
-    def refresh(self):   
-        self.table = pyo.SndTable()
+    def refresh(self):
+        self.dur = self.dur   
+        self.table = pyo.SndTable('blank.wav',stop=self.dur)
         self.input = pyo.Input() 
         self.tabFill = pyo.TableFill(self.input, self.table)
 
     def setSound(self, sound):
         pass
 
-    def setDur(self, start=1, stop=.1):
+    def setDur(self, start=1, stop=.02):
         self.dur = start
         self.refreshRate = stop
         self.refresh()
@@ -90,6 +91,7 @@ class Amplitude:
 
 
     def refresh(self):
+        self.snd.refresh()
         self.snd = self.snd
         self.dur = self.snd.dur
         self.refreshRate = self.snd.refreshRate
@@ -168,7 +170,7 @@ class Amplitude:
     def stop(self):
         self.son.stop()
 
-    def setDur(self, start=1, stop=.1):
+    def setDur(self, start=1, stop=.02):
         self.snd.setDur(start, stop)
         self.refresh()
 
@@ -440,8 +442,9 @@ class Change(Amplitude):
 if __name__ == "__main__":
     s = pyo.Server().boot()
 
-    algo = DevAmp()
+    algo = HistAmp()
     algo.setMode(LiveIn())
+    algo.setDur(5)
     #algo.out()
     
     osc = pyo.Sine(400, mul=algo.amp()).out()

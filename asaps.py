@@ -186,7 +186,7 @@ class AsFrame(wx.Frame):
         self.Change()
         self.audio.algo.out()
 
-        
+
     def Change(self):
         #self.mode = self.mode
         self.param1 = self.audio.algo.amp()
@@ -208,7 +208,7 @@ class AsFrame(wx.Frame):
             self.osc.setFilter(self.param2) 
         if self.checkExtraB.IsChecked():
             self.osc.setExtra(self.param2) 
-
+ 
         self.audio.algo.sig.mul = self.ampA.getValue()
         self.audio.algo.sig2.mul = self.ampB.getValue()
 
@@ -329,10 +329,10 @@ class AsFrame(wx.Frame):
             self.sndview.Show()
             self.chooseButton.Show()
             self.checkOG.Show()
-            self.audio.algo.play()
             self.memSize.Hide()
             self.memText.Hide()
             self.freeze.Hide()
+            self.audio.algo.play()
 
         elif self.popup2.Selection == 1 :
             self.mode = pro.LiveIn()
