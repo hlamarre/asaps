@@ -88,6 +88,8 @@ class Amplitude:
         self.durOG = self.snd.durOG 
         self.son = pyo.TableRead(self.table, 1/self.dur, 1)
         self.sig = None
+        self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
+
 
 
     def refresh(self):
@@ -105,7 +107,7 @@ class Amplitude:
 
         self.tableOG = self.snd.tableOG
         self.durOG = self.snd.durOG 
-        self.son = pyo.TableRead(self.table, 1/self.dur, 1)
+        self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
 
     def refreshTable(self):
         self.env = self.table.getEnvelope(self.len)
@@ -163,8 +165,9 @@ class Amplitude:
         self.refresh()
         self.play()
         
-    def out(self):
-        self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
+    def out(self, mul=1):
+        self.vol = mul
+        self.son.setMul(self.vol)
         return self.son.out()
 
     def stop(self):
