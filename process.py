@@ -89,6 +89,7 @@ class Amplitude:
         self.son = pyo.TableRead(self.table, 1/self.dur, 1)
         self.sig = None
         self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
+        self.son.out()
 
 
 
@@ -108,6 +109,7 @@ class Amplitude:
         self.tableOG = self.snd.tableOG
         self.durOG = self.snd.durOG 
         self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
+        self.son.out()
 
     def refreshTable(self):
         self.env = self.table.getEnvelope(self.len)
@@ -168,7 +170,7 @@ class Amplitude:
     def out(self, mul=1):
         self.vol = mul
         self.son.setMul(self.vol)
-        return self.son.out()
+        return self.son
 
     def stop(self):
         self.son.stop()
@@ -446,8 +448,8 @@ if __name__ == "__main__":
     s = pyo.Server().boot()
 
     algo = HistAmp()
-    algo.setMode(LiveIn())
-    algo.setDur(5)
+    #algo.setMode(LiveIn())
+    #algo.setDur(5)
     #algo.out()
     
     osc = pyo.Sine(400, mul=algo.amp()).out()

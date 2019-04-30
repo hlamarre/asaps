@@ -130,7 +130,7 @@ class AsFrame(wx.Frame):
         self.checkOG.SetValue(True)
         self.checkOG.Bind(wx.EVT_CHECKBOX, self.OGsoundON) 
 
-        self.ogVol = pyo.PyoGuiControlSlider(self.panel, .001, 1, init=0, pos=(310,10), size=(25,100), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.ogVol = pyo.PyoGuiControlSlider(self.panel, .001, 1, init=1, pos=(310,10), size=(25,100), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ogVolText = wx.StaticText(self.panel, id=-1, label="", pos=(160,15))
         self.ogVol.Bind(wx.EVT_LEFT_UP, self.setOGVol)        
         
@@ -272,6 +272,7 @@ class AsFrame(wx.Frame):
 
     def changeAlgo(self, evt):
         #self.ctrl.Unbind(wx.EVT_SCROLL_THUMBRELEASE)            
+        self.audio.algo.stop()
 
         if self.popup.Selection == 0 :
             self.audio.algo = pro.AsAmp()
@@ -308,6 +309,7 @@ class AsFrame(wx.Frame):
 
         elif self.popup.Selection == 5 :
             self.audio.algo = pro.MarkAmp()
+            self.audio.refresh
             self.ctrl.SetValue(1)
             self.ctrl.SetMin(1)
             self.ctrl.SetMax(5)
@@ -326,6 +328,9 @@ class AsFrame(wx.Frame):
         #    self.audio.algo.out()
             
         self.Change()
+
+        self.tempOGVol = self.ogVol.getValue() 
+        self.audio.algo.out(self.tempOGVol)
 
         xA = self.floorA.getValue()* 100
         self.param1 += xA 
@@ -363,7 +368,7 @@ class AsFrame(wx.Frame):
         self.audio.algo.setMode(self.mode)
         #if self.popup2.Selection == 0 :
         #    self.audio.algo.out()
-        
+
         self.audio.refresh()
         self.Change()    
         self.Refresh()
