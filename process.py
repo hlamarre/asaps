@@ -135,9 +135,10 @@ class Amplitude:
 
     def setMode(self, mode):
         self.snd = mode
-        self.snd.refresh()
+        #self.snd.refresh()
         self.refresh()
-        self.play() 
+        self.play()
+
 
     def setSound(self, sound):
         self.snd.setSound(sound)
@@ -448,9 +449,9 @@ if __name__ == "__main__":
     s = pyo.Server().boot()
 
     algo = HistAmp()
-    #algo.setMode(LiveIn())
+    algo.setMode(LiveIn())
     #algo.setDur(5)
-    #algo.out()
+    algo.out()
     
     osc = pyo.Sine(400, mul=algo.amp()).out()
 

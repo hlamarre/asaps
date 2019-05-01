@@ -83,7 +83,7 @@ class AsFrame(wx.Frame):
         self.popup2.SetSelection(0)
         self.popup2.Bind(wx.EVT_CHOICE, self.changeMode)    
 
-        self.res = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(130,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.res = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(130,140), size=(25,300), log=False, integer=True, powoftwo=False, orient=wx.VERTICAL)
         self.resText = wx.StaticText(self.panel, id=-1, label="res", pos=(135,440))
         self.res.Bind(wx.EVT_LEFT_UP, self.setRes) 
 
@@ -122,13 +122,8 @@ class AsFrame(wx.Frame):
         self.ctrl = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(10,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ctrlText = wx.StaticText(self.panel, id=-1, label="", pos=(0,440))
         '''
-        self.ctrl = wx.Slider(self.panel, id=-1, value=50, minValue=1, maxValue=100, pos=(10,150), size=(-1,300), style=wx.SL_VERTICAL | wx.SL_INVERSE)
-        self.ctrlText = wx.StaticText(self.panel, id=-1, label="", pos=(0,440))
-        
-        self.checkOG = wx.CheckBox(self.panel, id=-1, label="reference sound", pos=(160,5), size=(-1, 20), style=0)
-        self.checkOG.Hide()
-        self.checkOG.SetValue(True)
-        self.checkOG.Bind(wx.EVT_CHECKBOX, self.OGsoundON) 
+        self.ctrl = wx.Slider(self.panel, id=-1, value=50, minValue=1, maxValue=100, pos=(10,133), size=(-1,310), style=wx.SL_VERTICAL | wx.SL_INVERSE)
+        self.ctrlText = wx.StaticText(self.panel, id=-1, label="", pos=(0,440)) 
 
         self.ogVol = pyo.PyoGuiControlSlider(self.panel, .001, 1, init=1, pos=(310,10), size=(25,100), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ogVolText = wx.StaticText(self.panel, id=-1, label="", pos=(160,15))
@@ -213,6 +208,9 @@ class AsFrame(wx.Frame):
             self.osc.setFilter(self.param2) 
         if self.checkExtraB.IsChecked():
             self.osc.setExtra(self.param2) 
+
+        if self.popup2.GetSelection() == 1 :
+            self.audio.algo.stop()             
  
         self.audio.algo.sig.mul = self.ampA.getValue()
         self.audio.algo.sig2.mul = self.ampB.getValue()
@@ -320,9 +318,12 @@ class AsFrame(wx.Frame):
 
         if self.popup2.GetSelection() == 0 :
             self.mode = pro.SndReader()
+            self.audio.algo.setMode(self.mode)
         elif self.popup2.GetSelection() == 1 :
-            self.mode = pro.LiveIn()          
-        self.audio.algo.setMode(self.mode)
+            self.mode = pro.LiveIn()
+            self.audio.algo.setMode(self.mode)
+            self.audio.algo.stop()          
+        
 
         #if self.checkOG.IsChecked():
         #    self.audio.algo.out()
@@ -341,7 +342,8 @@ class AsFrame(wx.Frame):
     
 
     def changeMode(self, evt):
-
+        #self.audio.algo.out(0)
+        self.audio.algo.stop()
         if self.popup2.Selection == 0 :
             self.mode = pro.SndReader()
             self.sndview.Show()
@@ -352,6 +354,9 @@ class AsFrame(wx.Frame):
             self.freeze.Hide()
             self.ogVol.setValue(0)
             self.ogVol.Show()
+            self.audio.algo.setMode(self.mode)
+            self.audio.refresh()
+            self.Change()
             #self.audio.algo.out()
 
         elif self.popup2.Selection == 1 :
@@ -363,14 +368,20 @@ class AsFrame(wx.Frame):
             self.memText.Show()
             self.freeze.Show()
             self.ogVol.Hide()
-            self.audio.algo.out(0)
+            self.audio.algo.setMode(self.mode)
+            self.audio.refresh()
+            self.Change()        
+            self.audio.algo.stop()
 
-        self.audio.algo.setMode(self.mode)
+        #self.audio.algo.setMode(self.mode)
         #if self.popup2.Selection == 0 :
         #    self.audio.algo.out()
+        xA = self.floorA.getValue()* 100
+        self.param1 += xA 
+        xB = self.floorB.getValue()* 100
+        self.param2 += xB
 
-        self.audio.refresh()
-        self.Change()    
+    
         self.Refresh()
         
 
@@ -383,15 +394,6 @@ class AsFrame(wx.Frame):
         self.audio.algo.unFreeze()
         self.freeze.Label = 'freeze'
         self.freeze.Bind(wx.EVT_BUTTON, self.freezeBuff)
-
-    def OGsoundON(self, evt):
-        x = evt.IsChecked() 
-        if x:
-            self.audio.algo.out()
-        else:
-            self.audio.algo.out(0)
-         
-
 
 
     ''' 
@@ -493,10 +495,15 @@ class AsFrame(wx.Frame):
             #self.mode = pro.LiveIn(x)
             self.audio.algo.setDur(x)
             #if self.popup2.Selection == 0 :
-            #    self.audio.algo.out()
-        
+            #    self.audio.algo.out()  
             self.audio.refresh()
-            self.Change() 
+            self.Change()
+
+            xA = self.floorA.getValue()* 100
+            self.param1 += xA 
+            xB = self.floorB.getValue()* 100
+            self.param2 += xB 
+
         evt.Skip()
 
 
@@ -521,6 +528,11 @@ class AsFrame(wx.Frame):
     def setStSp(self, evt):
         self.audio.algo.setStartStop((evt.value[0]*self.audio.algo.durOG), (evt.value[1]*self.audio.algo.durOG))
         self.Change()
+
+        xA = self.floorA.getValue()* 100
+        self.param1 += xA 
+        xB = self.floorB.getValue()* 100
+        self.param2 += xB
         #if self.checkOG.IsChecked():
         #    self.audio.algo.out()
         self.Refresh() 
