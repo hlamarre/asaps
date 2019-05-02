@@ -1,4 +1,4 @@
-Énoncé:
+﻿Énoncé:
 
 analyse statistique de signal audio pour synthèse et traitement audio
 
@@ -21,7 +21,7 @@ Recherches sur:
 la librairie numpy utilisée pour l'analyse et le traitement statistique de l'information
 la création d'interfaces graphique simples
 http://www.numpy.org/
-...
+https://wxpython.org/Phoenix/docs/html/index.html
 
 Modèle:
 
@@ -38,6 +38,7 @@ L'enveloppe sera analysée selon différent processus ex: table de Markov, et su
 Une nouvelle table sera ensuite créé pour le contrôle de paramètres sur laquelle il sera possible d'intervenir 
 pour altérer la densité, l'échelle des signaux de contrôles... à l'aide de potentiomètres.
 Des informations de hauteurs et de spectres seront également extraites et traitées de façon similaire.
+
 
 ############ Commentaires #############
 

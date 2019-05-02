@@ -89,6 +89,7 @@ class Amplitude:
         self.son = pyo.TableRead(self.table, 1/self.dur, 1)
         self.sig = None
         self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
+        self.son = pyo.Mix(self.son, 2)
         self.son.out()
 
 
@@ -109,6 +110,7 @@ class Amplitude:
         self.tableOG = self.snd.tableOG
         self.durOG = self.snd.durOG 
         self.son = pyo.TableRead(self.table, 1/self.dur, 1).play()
+        self.son = pyo.Mix(self.son, 2)
         self.son.out()
 
     def refreshTable(self):
@@ -135,7 +137,6 @@ class Amplitude:
 
     def setMode(self, mode):
         self.snd = mode
-        #self.snd.refresh()
         self.refresh()
         self.play()
 
@@ -150,7 +151,6 @@ class Amplitude:
         self.snd.setDur(start=start, stop=stop)
         self.refresh()
         self.refreshTable()
-        #self.son.play()
         self.play()
 
     def setRes(self, res):
@@ -449,7 +449,7 @@ if __name__ == "__main__":
     s = pyo.Server().boot()
 
     algo = HistAmp()
-    algo.setMode(LiveIn())
+    #algo.setMode(LiveIn())
     #algo.setDur(5)
     algo.out()
     
