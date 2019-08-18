@@ -4,7 +4,7 @@ import wx
 import process as pro
 import synth as syn
 
-s = pyo.Server().boot()
+s = pyo.Server(winhost="asio").boot()
 
 
 class Audio:
@@ -46,7 +46,7 @@ class AsFrame(wx.Frame):
         self.popup2.SetSelection(0)
         self.popup2.Bind(wx.EVT_CHOICE, self.changeMode) 
 
-        self.synChoice = ['waveguide', 'FM', 'wavetable'] 
+        self.synChoice = ['waveguide', 'FM', 'wavetable 1', 'wavetable 2', 'file', 'input'] 
         self.popupSyn = wx.Choice(self.panel, id=-1, pos=(870,240), choices=self.synChoice)
         self.popupSyn.SetSelection(0)
         self.popupSyn.Bind(wx.EVT_CHOICE, self.changeSynth)  
@@ -59,7 +59,7 @@ class AsFrame(wx.Frame):
         self.floorAText = wx.StaticText(self.panel, id=-1, label="floorA", pos=(200,440))
         self.floorA.Bind(wx.EVT_LEFT_UP, self.changeFloorA) 
 
-        self.ampA = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=100, pos=(260,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.ampA = pyo.PyoGuiControlSlider(self.panel, -100, 100, init=100, pos=(260,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ampTextA = wx.StaticText(self.panel, id=-1, label="ampA", pos=(250,440))
         self.ampA.Bind(wx.EVT_LEFT_UP, self.changeAmp)
 
@@ -71,7 +71,7 @@ class AsFrame(wx.Frame):
         self.floorBText = wx.StaticText(self.panel, id=-1, label="floorB", pos=(380,440))
         self.floorB.Bind(wx.EVT_LEFT_UP, self.changeFloorB) 
 
-        self.ampB = pyo.PyoGuiControlSlider(self.panel, .01, 100, init=100, pos=(440,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.ampB = pyo.PyoGuiControlSlider(self.panel, -100, 100, init=100, pos=(440,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ampTextB = wx.StaticText(self.panel, id=-1, label="ampB", pos=(430,440))
         self.ampB.Bind(wx.EVT_LEFT_UP, self.changeAmpB)
 
@@ -93,7 +93,7 @@ class AsFrame(wx.Frame):
         self.ctrl = wx.Slider(self.panel, id=-1, value=50, minValue=1, maxValue=100, pos=(10,133), size=(-1,310), style=wx.SL_VERTICAL | wx.SL_INVERSE)
         self.ctrlText = wx.StaticText(self.panel, id=-1, label="", pos=(0,440)) 
 
-        self.ogVol = pyo.PyoGuiControlSlider(self.panel, .001, 1, init=1, pos=(310,10), size=(25,100), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
+        self.ogVol = pyo.PyoGuiControlSlider(self.panel, .001, 1, init=1, pos=(310,10), size=(25,100), log=True, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ogVolText = wx.StaticText(self.panel, id=-1, label="", pos=(160,15))
         self.ogVol.Bind(wx.EVT_LEFT_UP, self.setOGVol)        
         
@@ -354,6 +354,15 @@ class AsFrame(wx.Frame):
         if self.popupSyn.Selection == 2 :
             self.osc = syn.WT()
 
+        if self.popupSyn.Selection == 3 :
+            self.osc = syn.WT2() 
+
+        if self.popupSyn.Selection == 4 :
+            self.loadFile()   
+
+        if self.popupSyn.Selection == 5 :
+            self.osc = syn.Input()     
+
         self.osc.out()
         self.Change()
 
@@ -362,7 +371,19 @@ class AsFrame(wx.Frame):
         xB = self.floorB.getValue()* 100
         self.param2 += xB
 
+    def loadFile(self):
+        wildcard = "All files|*.*|" \
+               "AIFF file|*.aif;*.aiff;*.aifc;*.AIF;*.AIFF;*.Aif;*.Aiff|" \
+               "Wave file|*.wav;*.wave;*.WAV;*.WAVE;*.Wav;*.Wave"
+        self.dlgF = wx.FileDialog(self, message="Choose a new soundfile...", wildcard=wildcard, style=wx.FD_OPEN)
+        if self.dlgF.ShowModal() == wx.ID_OK:
+            path = self.dlgF.GetPath()
+            if path != "":
+                self.osc = syn.File(path)
 
+        self.dlgF.Destroy()
+
+        self.Refresh()
 
     def freezeBuff(self, evt):
         self.audio.algo.freeze()
@@ -503,7 +524,8 @@ class AsFrame(wx.Frame):
         xB = self.floorB.getValue()* 100
         self.param2 += xB
 
-        self.Refresh()    
+        self.Refresh()   
+  
 
 
     def setStSp(self, evt):
