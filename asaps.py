@@ -28,7 +28,7 @@ class AsFrame(wx.Frame):
         self.audio = audio
         self.panel = wx.Panel(self)
         self.panel.SetBackgroundColour("#555558")
-        s.start()
+        #s.start()
 
         self.sound = 'feu.wav' 
         
@@ -86,6 +86,11 @@ class AsFrame(wx.Frame):
         self.freeze.Bind(wx.EVT_BUTTON, self.freezeBuff)  
         self.freeze.Hide()
 
+        self.playButton = wx.Button(self.panel, id=-1, label="play", pos=(5,35), size=(50,20))
+        self.playButton.Bind(wx.EVT_BUTTON, self.play) 
+        
+        self.recButton = wx.Button(self.panel, id=-1, label="rec", pos=(5,60), size=(50,20))
+        self.recButton.Bind(wx.EVT_BUTTON, self.rec) 
         '''
         self.ctrl = pyo.PyoGuiControlSlider(self.panel, 1, 100, init=50, pos=(10,140), size=(25,300), log=False, integer=False, powoftwo=False, orient=wx.VERTICAL)
         self.ctrlText = wx.StaticText(self.panel, id=-1, label="", pos=(0,440))
@@ -395,7 +400,25 @@ class AsFrame(wx.Frame):
         self.freeze.Label = 'freeze'
         self.freeze.Bind(wx.EVT_BUTTON, self.freezeBuff)
 
-
+    def play(self, evt):
+        s.start()
+        self.playButton.Label = 'stop'
+        self.playButton.Bind(wx.EVT_BUTTON, self.stop)   
+        
+    def stop(self,evt):
+        s.stop()
+        self.playButton.Label = 'play'
+        self.playButton.Bind(wx.EVT_BUTTON, self.play)
+     
+    def  rec(self,evt):
+        s.recstart()
+        self.recButton.Label = 'stop rec'
+        self.recButton.Bind(wx.EVT_BUTTON, self.stoprec)
+       
+    def  stoprec(self,evt):
+        s.recstop()
+        self.recButton.Label = 'rec'
+        self.recButton.Bind(wx.EVT_BUTTON, self.rec) 
     ''' 
     def changePeriod(self, evt):
         if evt.LeftUp(): 
@@ -526,7 +549,7 @@ class AsFrame(wx.Frame):
 
         self.Refresh()   
   
-
+        
 
     def setStSp(self, evt):
         self.audio.algo.setStartStop((evt.value[0]*self.audio.algo.durOG), (evt.value[1]*self.audio.algo.durOG))
@@ -606,6 +629,5 @@ mainFrame = AsFrame(None, title='asaps', pos=(100,100), size=(1000,500), audio=a
 mainFrame.Show()
 
 app.MainLoop()
-
 
 
