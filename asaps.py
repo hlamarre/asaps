@@ -4,7 +4,7 @@ import wx
 import process as pro
 import synth as syn
 
-s = pyo.Server(winhost="asio").boot()
+s = pyo.Server().boot()
 
 
 class Audio:
